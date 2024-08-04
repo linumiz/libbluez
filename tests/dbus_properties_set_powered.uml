@@ -1,0 +1,20 @@
+@startuml
+actor User as u
+participant Application as app #LightBlue
+participant "DBus Connection" as dbus #LightYellow
+participant "BlueZ Adapter" as bluez #LightGreen
+
+u -> app: Request to set Powered property
+app -> dbus: Call Set("org.bluez.Adapter1", "Powered", false)
+dbus -> bluez: Set("org.bluez.Adapter1", "Powered", false)
+bluez -> dbus: Acknowledge Set (Powered off)
+dbus -> app: Acknowledge Set (Powered off)
+
+app -> app: Sleep for 3 seconds
+
+app -> dbus: Call Set("org.bluez.Adapter1", "Powered", true)
+dbus -> bluez: Set("org.bluez.Adapter1", "Powered", true)
+bluez -> dbus: Acknowledge Set (Powered on)
+dbus -> app: Acknowledge Set (Powered on)
+
+@enduml
