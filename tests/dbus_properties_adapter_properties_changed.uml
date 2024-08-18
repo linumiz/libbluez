@@ -1,0 +1,41 @@
+@startuml
+actor User as u
+participant Application as app #LightBlue
+participant "DBus Connection" as dbus #LightYellow
+participant "BlueZ Adapter" as bluez #LightGreen
+
+u -> app: Run Application
+activate app
+app -> dbus: Connect to System Bus
+activate dbus
+dbus -> app: Connection established
+deactivate dbus
+
+app -> dbus: Subscribe to PropertiesChanged signal\n using g_dbus_connection_signal_subscribe
+activate dbus
+dbus -> app: Subscription confirmed
+deactivate dbus
+
+app -> dbus: Set Alias("Linumiz")\n using org.freedesktop.DBus.Properties.Set
+activate dbus
+dbus -> bluez: Set Alias("Linumiz")
+activate bluez
+bluez -> dbus: Confirm Alias set to "Linumiz"
+deactivate bluez
+dbus -> app: Return from Set Alias
+deactivate dbus
+
+note right of app: Alias set successfully \n in application
+
+bluez -> dbus: Emit PropertiesChanged signal\n for Alias property
+activate bluez
+dbus -> app: Send PropertiesChanged signal
+activate dbus
+deactivate bluez
+dbus -> app: PropertiesChanged signal received
+deactivate dbus
+
+app -> app: Handle PropertiesChanged callback
+app -> u: Display "Property Changed: Alias -> Linumiz"
+deactivate app
+@enduml
